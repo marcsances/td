@@ -1,60 +1,116 @@
-const electron = require('electron')
-// Module to control application life.
-const app = electron.app
-// Module to create native browser window.
-const BrowserWindow = electron.BrowserWindow
+/* eslint-disable no-console */
 
-const path = require('path')
-const url = require('url')
+const { app, BrowserWindow } = require('electron');
+const path = require('path');
+const url = require('url');
+const DiscordRPC = require('discord-rpc');
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let mainWindow
+// don't change the client id if you want this example to work
+const ClientId = '442789695038947328';
 
-function createWindow () {
-  // Create the browser window.
-  mainWindow = new BrowserWindow({width: 800, height: 600})
+let mainWindow;
 
-  // and load the index.html of the app.
-  mainWindow.loadURL(url.format({
-    pathname: path.join(__dirname, 'index.html'),
-    protocol: 'file:',
-    slashes: true
-  }))
+function createWindow() {
+  mainWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    resizable: true,
+    titleBarStyle: 'hidden',
+  });
+  mainWindow.setMenu(null);
+  mainWindow.loadURL("https://www.twitch.tv/");
 
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
-
-  // Emitted when the window is closed.
-  mainWindow.on('closed', function () {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    mainWindow = null
-  })
+  mainWindow.on('closed', () => {
+    mainWindow = null;
+  });
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+app.on('ready', createWindow);
 
-// Quit when all windows are closed.
-app.on('window-all-closed', function () {
-  // On OS X it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') {
-    app.quit()
+app.on('window-all-closed', () => {
+  app.quit();
+});
+
+app.on('activate', () => {
+  if (mainWindow === null)
+    createWindow();
+});
+
+// only needed for discord allowing spectate, join, ask to join
+DiscordRPC.register(ClientId);
+
+const rpc = new DiscordRPC.Client({ transport: 'ipc' });
+const startTimestamp = new Date();
+
+function dispatchUrl(url) {
+  var matchRegex = /https?:\/\/(?:www.)?twitch.tv\/([^\\\/\n]+)?(?:\/([^\\\/\n]+))?(?:\/([^\\\/\n]+))?/gi;
+  var res = matchRegex.exec(url);
+  if (res.length > 0) {
+    switch (res[1]) {
+      case undefined:
+        this.details = "Twitch";
+        this.state = "Twitch Home";
+        this.largeImageKey = "marquii";
+        this.largeImageText = "Twitch Home";
+        this.smallImageKey = "twitch";
+        this.smallImageText = "Twitch";
+        break;
+      case "directory":
+        this.details = "Twitch";
+        this.state = "Twitch Directory (" + (res[2]!=undefined ? res[3] : "directory home") + ")";
+        this.largeImageKey = "marquii";
+        this.largeImageText = "Twitch Directory (" + (res[2]!=undefined ? res[3] : "directory home") + ")";
+        this.smallImageKey = "twitch";
+        this.smallImageText = "Twitch";
+        break;
+      default:
+        this.details = "Twitch";
+        this.state = "Watching " + res[1];
+        this.largeImageKey = "marquii";
+        this.largeImageText = res[1];
+        this.smallImageKey = "twitch";
+        this.smallImageText = "Twitch";
+        break;
+    }
+  } else {
+    this.details = "Twitch";
+    this.state = "Unknown Location";
+    this.largeImageKey = "marquii";
+    this.largeImageText = "Unknown Location";
+    this.smallImageKey = "twitch";
+    this.smallImageText = "Unknown Location";
   }
-})
+  return this;
+}
 
-app.on('activate', function () {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (mainWindow === null) {
-    createWindow()
-  }
-})
+async function setActivity() {
+  if (!rpc || !mainWindow)
+    return;
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+  const boops = await mainWindow.webContents.executeJavaScript('window.boops');
+  console.log(mainWindow.webContents.history[mainWindow.webContents.currentIndex])
+  var status = dispatchUrl(mainWindow.webContents.history[mainWindow.webContents.currentIndex])
+  console.log(status.largeImageText)
+  rpc.setActivity({
+    details:  status.details,
+    state: status.state,
+    startTimestamp,
+    largeImageKey: status.largeImageKey,
+    largeImageText: status.largeImageText,
+    smallImageKey: status.smallImageKey,
+    smallImageText: status.smallImageText,
+    instance: false,
+  });
+}
+
+
+rpc.on('ready', () => {
+  setActivity();
+
+  // activity can only be set every 15 seconds
+  setInterval(() => {
+    setActivity();
+  }, 15e3);
+});
+
+rpc.login(ClientId).catch(console.error);

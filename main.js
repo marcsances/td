@@ -54,41 +54,41 @@ DiscordRPC.register(ClientId);
 
 const rpc = new DiscordRPC.Client({ transport: 'ipc' });
 const startTimestamp = new Date();
+const sysurls = ['directory','dashboard'];
+const featured = ['summit1g','the8bitdrummer','sethdrumstv'];
 
 function dispatchUrl(url) {
   var matchRegex = /https?:\/\/(?:www.)?twitch.tv\/([^\\\/\n]+)?(?:\/([^\\\/\n]+))?(?:\/([^\\\/\n]+))?/gi;
   var res = matchRegex.exec(url);
   if (res.length > 0) {
+    this.smallImageKey = "twitch";
+    this.smallImageText = "Twitch";
+    this.details = "Twitch";
     switch (res[1]) {
       case undefined:
-        this.details = "Twitch";
         this.state = "Twitch Home";
-        this.largeImageKey = "marquii";
-        this.largeImageText = "Twitch Home";
-        this.smallImageKey = "twitch";
-        this.smallImageText = "Twitch";
+        this.largeImageKey = "glitchy";
+        this.largeImageText = this.state;
         break;
       case "directory":
-        this.details = "Twitch";
-        this.state = "Twitch Directory (" + (res[2]!=undefined ? res[3] : "directory home") + ")";
-        this.largeImageKey = "marquii";
-        this.largeImageText = "Twitch Directory (" + (res[2]!=undefined ? res[3] : "directory home") + ")";
-        this.smallImageKey = "twitch";
-        this.smallImageText = "Twitch";
+        this.state = "Twitch Directory (" + (res[2]!=undefined ? (res[2]=="following" ? "following" : res[3]) : "home") + ")";
+        this.largeImageKey = "glitchy";
+        this.largeImageText = this.state;;
         break;
       default:
-        this.details = "Twitch";
+        if (featured.indexOf(res[1])!=-1) {
+          this.largeImageKey = res[1];  
+        } else {
+          this.largeImageKey = "glitchy";
+        }
         this.state = "Watching " + res[1];
-        this.largeImageKey = "marquii";
         this.largeImageText = res[1];
-        this.smallImageKey = "twitch";
-        this.smallImageText = "Twitch";
         break;
     }
   } else {
     this.details = "Twitch";
     this.state = "Unknown Location";
-    this.largeImageKey = "marquii";
+    this.largeImageKey = "glitchy";
     this.largeImageText = "Unknown Location";
     this.smallImageKey = "twitch";
     this.smallImageText = "Unknown Location";

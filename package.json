@@ -1,21 +1,21 @@
 {
-  "name": "electron-quick-start",
+  "name": "td",
   "version": "1.0.0",
   "description": "A minimal Electron application",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/marcsances/td",
   "keywords": [
     "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
+    "Twitch",
+    "Discord",
+    "rich presence",
+    "rpc"
   ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
+  "author": "Marc Sances",
+  "license": "BSD-3-Clause",
   "devDependencies": {
     "electron": "^1.8.4"
   },

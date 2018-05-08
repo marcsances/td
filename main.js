@@ -28,13 +28,26 @@ function createWindow() {
     height: 600,
     resizable: true,
     titleBarStyle: 'hidden',
+    show: false,
     webPreferences: { nodeIntegration: false },
     icon: path.join(__dirname, 'assets/icons/64x64.png')
   });
   //mainWindow.setMenu(null);
   mainWindow.loadURL("https://www.twitch.tv/");
 
-  mainWindow.on('closed', () => {
+  mainWindow.on('ready-to-show', () => {
+    mainWindow.webContents.executeJavaScript("new Promise((r,x)=>{\
+    var script = document.createElement('script');\
+    script.type = 'text/javascript';\
+    script.src = 'https://cdn.betterttv.net/betterttv.js';\
+    var head = document.getElementsByTagName('head')[0];\
+    if (!head) return;\
+    head.appendChild(script);\
+    r();})").then((r)=>{console.log(r);});
+    mainWindow.show();
+  });
+
+  mainWindow.once('closed', () => {
     mainWindow = null;
   });
 }

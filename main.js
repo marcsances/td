@@ -28,9 +28,10 @@ function createWindow() {
     height: 600,
     resizable: true,
     titleBarStyle: 'hidden',
+    webPreferences: { nodeIntegration: false },
     icon: path.join(__dirname, 'assets/icons/png/64x64.png')
   });
-  mainWindow.setMenu(null);
+  //mainWindow.setMenu(null);
   mainWindow.loadURL("https://www.twitch.tv/");
 
   mainWindow.on('closed', () => {

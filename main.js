@@ -43,7 +43,7 @@ function createWindow() {
     var head = document.getElementsByTagName('head')[0];\
     if (!head) return;\
     head.appendChild(script);\
-    r();})").then((r)=>{console.log(r);});
+    r();})").then((r)=>{console.log("loaded BTTV script")});
     mainWindow.show();
   });
 
@@ -109,24 +109,39 @@ function dispatchUrl(url) {
   return this;
 }
 
+var share=true;
+
 async function setActivity() {
   if (!rpc || !mainWindow)
     return;
+  
+  await mainWindow.webContents.executeJavaScript("new Promise((r,x)=>{\
+    r(document.querySelector('[data-a-target=share-activity-toggle]').getAttribute('data-a-value')=='true');})").then((r)=>{
+    share=r;
+  }); 
 
-  const boops = await mainWindow.webContents.executeJavaScript('window.boops');
-  console.log(mainWindow.webContents.history[mainWindow.webContents.currentIndex])
-  var status = dispatchUrl(mainWindow.webContents.history[mainWindow.webContents.currentIndex])
-  console.log(status.largeImageText)
-  rpc.setActivity({
-    details:  status.details,
-    state: status.state,
-    startTimestamp,
-    largeImageKey: status.largeImageKey,
-    largeImageText: status.largeImageText,
-    smallImageKey: status.smallImageKey,
-    smallImageText: status.smallImageText,
-    instance: false,
-  });
+  if (!share) {
+    rpc.setActivity({
+      largeImageKey: "glitchy",
+      largeImageText: "Twitch",
+      instance: false,
+    });
+  } else {
+    const boops = await mainWindow.webContents.executeJavaScript('window.boops');
+    console.log(mainWindow.webContents.history[mainWindow.webContents.currentIndex])
+    var status = dispatchUrl(mainWindow.webContents.history[mainWindow.webContents.currentIndex])
+    console.log(status.largeImageText)
+    rpc.setActivity({
+      details:  status.details,
+      state: status.state,
+      startTimestamp,
+      largeImageKey: status.largeImageKey,
+      largeImageText: status.largeImageText,
+      smallImageKey: status.smallImageKey,
+      smallImageText: status.smallImageText,
+      instance: false,
+    });
+  }
 }
 
 

@@ -12,7 +12,48 @@ Basic electron stuff, mostly nodejs and npm.
 
 ## Testing
 
-Clone repository and run ``npm install`` then ``npm start``. Tested on Windows so far, so don't make expectations on other OSes.
+Clone repository and run ``npm install`` then ``npm start``. 
+
+Tested on Windows 10 and Ubuntu 16.04 LTS, both with no serious issues.
+
+## Disclaimer
+
+None of this application is endorsed nor approved by neither Twitch nor Discord. Twitch and Discord are trademarks of their respective owners and their brand names are used only under fair use for information purposes.
+
+## FAQ
+
+### Are there any binaries available?
+
+Work in progress (TM), for now you'll have to build the source.
+
+### Any help accepted?
+
+Yes! Feel free to submit a pull request if any cool feature comes up. Right now my priorities are:
+
+* OSX support testing (high, help much appreciated)
+* adding navigation features (high)
+* adding most common streamers into the featured list (high, check next question)
+* creating binary packages (high)
+* integrating BTTV/FFZ into the client (med)
+* multi language support (low)
+* join button (very low as it requires Discord approval first)
+* support for other services (Youtube Gaming mostly, very low)
+
+Economic help is not asked yet (I might accept small tips as acknowledgement if you really want to show your support, but please contact me first through email). The best way to support this project is just by sharing it with your friends.
+
+### Why some (really few streams) show picture and the rest only show the Twitch logo?
+
+Sadly, Discord Rich Presence doesn't allow yet to upload pictures on the fly, and requires an image key for each picture. To showcase this functionality, some stream logos have been uploaded as assets on the Discord application, however, Discord limits this to 150 resources, so not all streams will make it into the application.
+
+I'm open to hearing names that would be cool to fit in the application, the addition will be studied case by case, but mostly streamers I personally watch (this program is made for my personal use primarily) and large streamers (partnered, at least) can get inside. If you have such a name, email me (check my Github profile) or submit a pull request adding the name into the "featured" array (I still have to manually upload the asset).
+
+For the rest of situations, if you _really_ want to see certain name, still feel free to ask, and if I reject your request (mostly due to space requirements), I recommend forking my project for your personal use and creating a new Discord application.
+
+### Why this isn't yet a feature on (Discord/Twitch/X)?
+
+``¯\_(ツ)_/¯``
+
+I do like this feature as it allows streamers get more visibility through your own Discord profile.
 
 ## License
 

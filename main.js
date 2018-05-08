@@ -43,6 +43,12 @@ function createWindow() {
     var head = document.getElementsByTagName('head')[0];\
     if (!head) return;\
     head.appendChild(script);\
+    var script = document.createElement('script');\
+    script.type = 'text/javascript';\
+    script.src = 'https://cdn.frankerfacez.com/script/script.min.js';\
+    var head = document.getElementsByTagName('head')[0];\
+    if (!head) return;\
+    head.appendChild(script);\
     r();})").then((r)=>{console.log("loaded BTTV script")});
     mainWindow.show();
   });

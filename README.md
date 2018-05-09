@@ -34,6 +34,8 @@ Yes! Feel free to submit a pull request if any cool feature comes up. Right now 
 * adding navigation features (high)
 * adding most common streamers into the featured list (high, check next question)
 * creating binary packages (high)
+* settings panel (medium)
+* support for additional userscripts (low)
 * multi language support (low)
 * join button (very low as it requires Discord approval first)
 * support for other services (Youtube Gaming mostly, very low)

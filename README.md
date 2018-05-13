@@ -14,7 +14,7 @@ Basic electron stuff, mostly nodejs and npm.
 
 Clone repository and run ``npm install`` then ``npm start``. 
 
-Tested on Windows 10 and Ubuntu 16.04 LTS, both with no serious issues.
+Tested on Windows 10 and Ubuntu 16.04 LTS, both with no serious compatibility issues. *I need help for macOS testing!*
 
 ## Disclaimer
 
@@ -32,19 +32,13 @@ Work in progress (TM), for now you'll have to build the source.
 
 ### Any help accepted?
 
-Yes! Feel free to submit a pull request or issue if any cool feature comes up. Right now my priorities are:
-
-* OSX support testing (high, help much appreciated)
-* adding navigation features (high)
-* adding most common streamers into the featured list (high, check next question)
-* creating binary packages (high)
-* settings panel (medium)
-* support for additional userscripts (low)
-* multi language support (low)
-* join button (very low as it requires Discord approval first)
-* support for other services (Youtube Gaming mostly, very low)
+Yes! Feel free to submit a [pull request](https://github.com/marcsances/td/pulls) or issue if any cool feature comes up. You can check the [open issues](https://github.com/marcsances/td/issues) and open one for yourself.
 
 Economic help is not asked yet (I might accept small tips as acknowledgement if you really want to show your support, but please contact me first through email). The best way to support this project is just by sharing it with your friends.
+
+### I have a problem!
+
+First check if there's already an [open issue](https://github.com/marcsances/td/issues) for your problem. If there's none, submit an issue and attach your logs (log.txt on the application folder). Make sure to screen out the logs for sensititive information, as this file will be public. If you don't feel confident of publishing the logs or they contain sensitive information, send them to my personal email (check my Github profile). When reporting the issue, be as much detailed as you can on the steps to reproduce the issue, and also add your OS version. This will help me track down the problem. You can also fix it for yourself, if you're brave enough, and submit a pull request.
 
 ### Why some (really few streams) show picture and the rest only show the Twitch logo?
 

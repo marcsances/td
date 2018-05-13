@@ -12,6 +12,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+const app_ver = "0.1.72d605";
 
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
@@ -22,6 +23,7 @@ const ClientId = '442789695038947328';
 
 const userscripts = ['https://cdn.betterttv.net/betterttv.js', 'https://cdn.frankerfacez.com/script/script.min.js'];
 // TODO: dynamic loading on user request
+var logger = require('electron-log');
 
 let mainWindow;
 
@@ -39,24 +41,33 @@ function getUserscriptInjectors() {
 }
 
 function createWindow() {
+  logger.transports.console.level = 'debug';
+  logger.transports.file.level = 'debug';
+  logger.transports.file.file = __dirname + '/log.txt';
+
+  logger.info("Welcome to Td, version " + app_ver);
+  console.log = logger.debug;
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     resizable: true,
     titleBarStyle: 'hidden',
     show: false,
-    webPreferences: { nodeIntegration: false },
+    webPreferences: { nodeIntegration: false, preload: path.join(__dirname,'preload.js') },
     icon: path.join(__dirname, 'assets/icons/64x64.png')
   });
   //mainWindow.setMenu(null);
   mainWindow.loadURL("https://www.twitch.tv/");
 
   mainWindow.on('ready-to-show', () => {
-    mainWindow.webContents.executeJavaScript("new Promise((r,x)=>{" + getUserscriptInjectors() + "r();})").then((r)=>{console.log("loaded BTTV script")});
+    logger.debug("ready-to-show fired, attempt to inject userscripts");
+    logger.debug("userscripts: " + userscripts);
+    mainWindow.webContents.executeJavaScript("new Promise((r,x)=>{" + getUserscriptInjectors() + "r();})").then((r)=>{logger.debug("userscripts injected successfully");});
     mainWindow.show();
   });
 
   mainWindow.once('closed', () => {
+    logger.debug("unloading");
     mainWindow = null;
   });
 }
@@ -64,6 +75,8 @@ function createWindow() {
 app.on('ready', createWindow);
 
 app.on('window-all-closed', () => {
+  logger.debug("window-all-closed, quitting");
+  logger.info("App quit triggered, closing");
   app.quit();
 });
 
@@ -82,6 +95,7 @@ const featured = ['summit1g','the8bitdrummer','sethdrumstv','lvpes','halifax','n
 function dispatchUrl(url) {
   var matchRegex = /https?:\/\/(?:www.)?twitch.tv\/([^\\\/\?\n]+)?(?:\?.*)?(?:\/([^\\\?\/\n]+))?(?:\?.*)?(?:\/([^\\\?\/\n]+))?/gi;
   var res = matchRegex.exec(url);
+  logger.debug("Matches: " + res)
   if (res.length > 0) {
     this.smallImageKey = "twitch";
     this.smallImageText = "Twitch";
@@ -220,9 +234,10 @@ async function setActivity() {
     });
   } else {
     const boops = await mainWindow.webContents.executeJavaScript('window.boops');
-    console.log(mainWindow.webContents.history[mainWindow.webContents.currentIndex])
+    logger.debug("Location: " + mainWindow.webContents.history[mainWindow.webContents.currentIndex])
     var status = dispatchUrl(mainWindow.webContents.history[mainWindow.webContents.currentIndex])
-    console.log(status.largeImageText)
+    logger.debug(status.details + "/" + status.state + "/" + status.largeImageKey + "/" + status.largeImageText + "/" + status.smallImageKey + "/" + status.smallImageText);
+    logger.debug("Setting RPC activity.");
     rpc.setActivity({
       details:  status.details,
       state: status.state,
@@ -246,4 +261,5 @@ rpc.on('ready', () => {
   }, 15e3);
 });
 
-rpc.login(ClientId).catch(console.error);
+logger.info("Attempt to connect to Discord RPC");
+rpc.login(ClientId).catch(logger.error);

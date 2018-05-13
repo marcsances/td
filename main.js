@@ -12,7 +12,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-const app_ver = "0.1.5f6dc1";
+const app_ver = "0.1.ab101d";
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const url = require('url');
@@ -74,11 +74,13 @@ function createWindow() {
   logger.transports.file.level = 'debug';
   logger.transports.file.file = __dirname + '/log.txt';
 
+  logger.debug("argv: " + process.argv);
   logger.info("Welcome to Td, version " + app_ver);
   console.log = logger.debug;
   mainWindow = new BrowserWindow(winSettings);
   //mainWindow.setMenu(null);
-  mainWindow.loadURL("https://www.twitch.tv/");
+  var user = process.argv.length>=3 ? process.argv[2] : "";
+  mainWindow.loadURL("https://www.twitch.tv/" + user);
 
   mainWindow.on('ready-to-show', () => {
     injectScripts(mainWindow)

@@ -20,6 +20,10 @@ Tested on Windows 10 and Ubuntu 16.04 LTS, both with no serious issues.
 
 None of this application is endorsed nor approved by neither Twitch nor Discord. Twitch and Discord are trademarks of their respective owners and their brand names are used only under fair use for information purposes.
 
+## Acknowledgements
+
+Huge shoutout to [Kyle](https://github.com/Racsr) who has been helping a lot with the testing and Santa's list of features.
+
 ## FAQ
 
 ### Are there any binaries available?
@@ -28,7 +32,7 @@ Work in progress (TM), for now you'll have to build the source.
 
 ### Any help accepted?
 
-Yes! Feel free to submit a pull request if any cool feature comes up. Right now my priorities are:
+Yes! Feel free to submit a pull request or issue if any cool feature comes up. Right now my priorities are:
 
 * OSX support testing (high, help much appreciated)
 * adding navigation features (high)
@@ -49,6 +53,10 @@ Sadly, Discord Rich Presence doesn't allow yet to upload pictures on the fly, an
 I'm open to hearing names that would be cool to fit in the application, the addition will be studied case by case, but mostly streamers I personally watch (this program is made for my personal use primarily) and large streamers (partnered, at least) can get inside. If you have such a name, email me (check my Github profile) or submit a pull request adding the name into the "featured" array (I still have to manually upload the asset).
 
 For the rest of situations, if you _really_ want to see certain name, still feel free to ask, and if I reject your request (mostly due to space requirements), I recommend forking my project for your personal use and creating a new Discord application.
+
+### What is this? New emotes? New weird badges? Host button? Did you code all this?
+
+No. [BetterTTV](https://nightdev.com/betterttv/) and [FrankerFaceZ](https://www.frankerfacez.com/) userscripts are integrated with Td from factory. I'll add an option to unload them on the settings (and also add custom userscripts), but it's not yet ready. If you dislike any of either (or want to add more), remove them from the ``userscripts`` variable. To add your own script, add a link to your script CDN. _Userscript link is not enough!_ Td does not recognize userscripts. Usually userscripts are just a bootstrapper that injects the actual script from an URL, so open the userscript and find such URL.
 
 ### Why this isn't yet a feature on (Discord/Twitch/X)?
 

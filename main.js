@@ -12,8 +12,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-const app_ver = "0.1.72d605";
-
+const app_ver = "0.1.5f6dc1";
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const url = require('url');
@@ -24,6 +23,16 @@ const ClientId = '442789695038947328';
 const userscripts = ['https://cdn.betterttv.net/betterttv.js', 'https://cdn.frankerfacez.com/script/script.min.js'];
 // TODO: dynamic loading on user request
 var logger = require('electron-log');
+
+const winSettings = {
+  width: 800,
+  height: 600,
+  resizable: true,
+  titleBarStyle: 'hidden',
+  show: false,
+  webPreferences: { nodeIntegration: false, preload: path.join(__dirname,'preload.js') },
+  icon: path.join(__dirname, 'assets/icons/64x64.png')
+};
 
 let mainWindow;
 
@@ -40,6 +49,26 @@ function getUserscriptInjectors() {
   return injectors;
 }
 
+function injectScripts(window) {
+  logger.debug("ready-to-show fired, attempt to inject userscripts");
+  logger.debug("userscripts: " + userscripts);
+  window.webContents.executeJavaScript("new Promise((r,x)=>{" + getUserscriptInjectors() + "r();})").then((r)=>{logger.debug("userscripts injected successfully");});
+  window.show();
+}
+
+function newWindow(event,url) {
+  logger.debug("new-window, url:" + url);
+  event.preventDefault()
+  const win = new BrowserWindow(winSettings)
+  win.loadURL(url);
+  win.on('ready-to-show', () => injectScripts(win));
+  win.webContents.on('new-window', newWindow);
+  win.on('closed', () => {
+    logger.debug('closing child');
+  });
+  event.newGuest = win;
+}
+
 function createWindow() {
   logger.transports.console.level = 'debug';
   logger.transports.file.level = 'debug';
@@ -47,24 +76,15 @@ function createWindow() {
 
   logger.info("Welcome to Td, version " + app_ver);
   console.log = logger.debug;
-  mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
-    resizable: true,
-    titleBarStyle: 'hidden',
-    show: false,
-    webPreferences: { nodeIntegration: false, preload: path.join(__dirname,'preload.js') },
-    icon: path.join(__dirname, 'assets/icons/64x64.png')
-  });
+  mainWindow = new BrowserWindow(winSettings);
   //mainWindow.setMenu(null);
   mainWindow.loadURL("https://www.twitch.tv/");
 
   mainWindow.on('ready-to-show', () => {
-    logger.debug("ready-to-show fired, attempt to inject userscripts");
-    logger.debug("userscripts: " + userscripts);
-    mainWindow.webContents.executeJavaScript("new Promise((r,x)=>{" + getUserscriptInjectors() + "r();})").then((r)=>{logger.debug("userscripts injected successfully");});
-    mainWindow.show();
+    injectScripts(mainWindow)
   });
+
+  mainWindow.webContents.on('new-window', newWindow);
 
   mainWindow.once('closed', () => {
     logger.debug("unloading");

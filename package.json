@@ -1,10 +1,19 @@
 {
   "name": "td",
-  "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "version": "0.1.0-dc4ac07",
+  "description": "Unofficial Twitch client with Discord Rich Presence support and extra features",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "build": {
+    "appId": "com.marcsances.td",
+    "mac": {
+      "category": "public.app-category.video"
+    }
   },
   "repository": "https://github.com/marcsances/td",
   "keywords": [
@@ -17,7 +26,8 @@
   "author": "Marc Sances",
   "license": "BSD-3-Clause",
   "devDependencies": {
-    "electron": "^1.8.4"
+    "electron": "^1.8.4",
+    "electron-builder": "^20.13.3"
   },
   "dependencies": {
     "discord-rpc": "^3.0.0-beta.10",

@@ -12,11 +12,13 @@ Redistribution and use in source and binary forms, with or without modification,
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-const app_ver = "0.1.dc4ac07";
+const pjson = require("./package.json");
+const app_ver = pjson.version;
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const url = require('url');
 const DiscordRPC = require('discord-rpc');
+const {dialog} = require('electron');
 
 const ClientId = '442789695038947328';
 
@@ -31,11 +33,11 @@ const winSettings = {
   resizable: true,
   titleBarStyle: 'hidden',
   show: false,
-  webPreferences: { nodeIntegration: false, preload: path.join(__dirname,'preload.js') },
+  webPreferences: { nodeIntegration: false, preload: path.join(__dirname,'preload.js'), nativeWindowOpen: true },
   icon: path.join(__dirname, 'assets/icons/64x64.png')
 };
 
-let mainWindow;
+let mainWindow = null;
 
 function getUserscriptInjectors() {
   var injectors = "";
@@ -47,6 +49,8 @@ function getUserscriptInjectors() {
     if (!head) return;\
     head.appendChild(script);";
   }
+  injectors = injectors + ";document.querySelector(\"[data-a-target='settings-dropdown-link']\").outerHTML = document.querySelector(\"[data-a-target='settings-dropdown-link']\").outerHTML + \"<a class='tw-interactable' data-a-target='td-dropdown-link' href='javascript:td_settings()'><div class='tw-align-items-center tw-c-text-alt tw-flex tw-pd-x-2 tw-pd-y-05'><div class='tw-align-items-center tw-flex tw-mg-r-1'><svg class='tw-svg__asset tw-svg__asset--inherit tw-svg__asset--navsettings' width='18px' height='18px' version='1.1' viewBox='0 0 18 18' x='0px' y='0px'><path clip-rule='evenodd' d='M15.03,5.091v4.878l-2,2H8.151l-3.061,3.061L2.97,12.908l3.061-3.06V4.97l2-2h4.879L8.97,6.909l2.121,2.121L15.03,5.091z' fill-rule='evenodd'></path></svg></div><p class=''>Td settings</p></div></a>\";";
+
   return injectors;
 }
 
@@ -59,15 +63,7 @@ function injectScripts(window) {
 
 function newWindow(event,url) {
   logger.debug("new-window, url:" + url);
-  event.preventDefault()
-  const win = new BrowserWindow(winSettings)
-  win.loadURL(url);
-  win.on('ready-to-show', () => injectScripts(win));
-  win.webContents.on('new-window', newWindow);
-  win.on('closed', () => {
-    logger.debug('closing child');
-  });
-  event.newGuest = win;
+  return;
 }
 
 function createWindow() {
@@ -79,7 +75,23 @@ function createWindow() {
   logger.info("Welcome to Td, version " + app_ver);
   console.log = logger.debug;
   mainWindow = new BrowserWindow(winSettings);
-  if (!devMenu) mainWindow.setMenu(null);
+  const {app, Menu} = require('electron')
+  
+  const template = [
+    {
+      label: 'Developer Menu',
+      submenu: [
+        {role: 'reload'},
+        {role: 'forcereload'},
+        {role: 'toggledevtools'},
+        {label: 'Version', click() { dialog.showMessageBox({message: "Td version " + app_ver + "\nNode v" + process.versions.node + "\nClient v" + process.versions.electron + "\nRenderer v" + process.versions.chrome + "\nEngine v" + process.versions.v8, buttons: ["OK"] })}},
+      ]
+    },
+  ];
+
+  const menu = Menu.buildFromTemplate(template)
+  mainWindow.setMenu(devMenu ? menu : null);
+  Menu.setApplicationMenu(menu);
   var user = process.argv.length>=3 ? process.argv[2] : "";
   mainWindow.loadURL("https://www.twitch.tv/" + user);
 
@@ -94,6 +106,8 @@ function createWindow() {
     mainWindow = null;
   });
 }
+
+
 
 app.on('ready', createWindow);
 

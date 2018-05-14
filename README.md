@@ -1,10 +1,10 @@
 # td
 
-simple Twitch client with Discord Rich Presence support.
+Twitch client with Discord Rich Presence support.
 
 ## What is this?
 
-td is a very simple Electron client that lets you use [Twitch](https://www.twitch.tv/) and show the channel you're watching through [Discord](https://discordapp.com/) Rich Presence feature. It's still in development stages but sounds cool, right?
+td is a client that lets you use [Twitch](https://www.twitch.tv/) and show the channel you're watching through [Discord](https://discordapp.com/) Rich Presence feature. It's still in development stages but sounds cool, right?
 
 ## Requirements
 
@@ -28,7 +28,7 @@ Huge shoutout to [Kyle](https://github.com/Racsr) who has been helping a lot wit
 
 ### Are there any binaries available?
 
-Work in progress (TM), for now you'll have to build the source.
+Yes, check the [releases page](https://github.com/marcsances/td/releases) and be warned it's pre-release yet.
 
 ### Any help accepted?
 

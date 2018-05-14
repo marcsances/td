@@ -19,13 +19,17 @@ const path = require('path');
 const url = require('url');
 const DiscordRPC = require('discord-rpc');
 const {dialog} = require('electron');
-
+const {copy, paste} = require('copy-paste')
 const ClientId = '442789695038947328';
+const window = require('electron').BrowserWindow;
+const dispatchUrl = require('./dispatcher').dispatchUrl;
+const {ipcMain} = require('electron');
 
 const userscripts = ['https://cdn.betterttv.net/betterttv.js', 'https://cdn.frankerfacez.com/script/script.min.js'];
 // TODO: dynamic loading on user request
 var logger = require('electron-log');
 var devMenu = true; 
+
 
 const winSettings = {
   width: 800,
@@ -50,7 +54,7 @@ function getUserscriptInjectors() {
     head.appendChild(script);";
   }
   injectors = injectors + ";document.querySelector(\"[data-a-target='settings-dropdown-link']\").outerHTML = document.querySelector(\"[data-a-target='settings-dropdown-link']\").outerHTML + \"<a class='tw-interactable' data-a-target='td-dropdown-link' href='javascript:td_settings()'><div class='tw-align-items-center tw-c-text-alt tw-flex tw-pd-x-2 tw-pd-y-05'><div class='tw-align-items-center tw-flex tw-mg-r-1'><svg class='tw-svg__asset tw-svg__asset--inherit tw-svg__asset--navsettings' width='18px' height='18px' version='1.1' viewBox='0 0 18 18' x='0px' y='0px'><path clip-rule='evenodd' d='M15.03,5.091v4.878l-2,2H8.151l-3.061,3.061L2.97,12.908l3.061-3.06V4.97l2-2h4.879L8.97,6.909l2.121,2.121L15.03,5.091z' fill-rule='evenodd'></path></svg></div><p class=''>Td settings</p></div></a>\";";
-
+  
   return injectors;
 }
 
@@ -70,7 +74,7 @@ function createWindow() {
   logger.transports.console.level = 'debug';
   logger.transports.file.level = 'debug';
   logger.transports.file.file = __dirname + '/log.txt';
-
+  
   logger.debug("argv: " + process.argv);
   logger.info("Welcome to Td, version " + app_ver);
   console.log = logger.debug;
@@ -84,23 +88,24 @@ function createWindow() {
         {role: 'reload'},
         {role: 'forcereload'},
         {role: 'toggledevtools'},
+        {label: 'Copy current URL', click() {wc=window.getFocusedWindow().webContents;copy(wc.history[wc.currentIndex])}},
         {label: 'Version', click() { dialog.showMessageBox({message: "Td version " + app_ver + "\nNode v" + process.versions.node + "\nClient v" + process.versions.electron + "\nRenderer v" + process.versions.chrome + "\nEngine v" + process.versions.v8, buttons: ["OK"] })}},
       ]
     },
   ];
-
+  
   const menu = Menu.buildFromTemplate(template)
   mainWindow.setMenu(devMenu ? menu : null);
   Menu.setApplicationMenu(menu);
   var user = process.argv.length>=3 ? process.argv[2] : "";
   mainWindow.loadURL("https://www.twitch.tv/" + user);
-
+  
   mainWindow.on('ready-to-show', () => {
     injectScripts(mainWindow)
   });
-
+  
   mainWindow.webContents.on('new-window', newWindow);
-
+  
   mainWindow.once('closed', () => {
     logger.debug("unloading");
     mainWindow = null;
@@ -119,7 +124,7 @@ app.on('window-all-closed', () => {
 
 app.on('activate', () => {
   if (mainWindow === null)
-    createWindow();
+  createWindow();
 });
 
 DiscordRPC.register(ClientId);
@@ -129,174 +134,86 @@ const startTimestamp = new Date();
 const sysurls = ['directory','dashboard'];
 const featured = ['summit1g','the8bitdrummer','sethdrumstv','lvpes','halifax','ninja','racsrr'];
 
-function dispatchUrl(url) {
-  var matchRegex = /https?:\/\/(?:www.)?twitch.tv\/([^\\\/\?\n]+)?(?:\?.*)?(?:\/([^\\\?\/\n]+))?(?:\?.*)?(?:\/([^\\\?\/\n]+))?/gi;
-  var res = matchRegex.exec(url);
-  logger.debug("Matches: " + res)
-  if (res.length > 0) {
-    this.smallImageKey = "twitch";
-    this.smallImageText = "Twitch";
-    this.details = "Twitch";
-    switch (res[1]) {
-      case undefined:
-        this.state = "Home";
-        this.largeImageKey = "glitchy";
-        this.largeImageText = this.state;
-        break;
-      case "directory":
-        this.state = "Directory (" + (res[2]!=undefined ? (res[2]=="following" ? "following" : res[3]) : "home") + ")";
-        this.largeImageKey = "glitchy";
-        this.largeImageText = this.state;
-        break;
-      case "settings":
-        this.state = "Managing settings";
-        this.largeImageKey = "glitchy";
-        this.largeImageText = "Settings";
-        break;
-      case "friends":
-        this.state = "Friends";
-        this.largeImageKey = "glitchy";
-        this.largeImageText = this.state;
-        break;
-      case "messages":
-        this.state = "Messages";
-        this.largeImageKey = "glitchy";
-        this.largeImageText = this.state;
-        break;
-      case "subscriptions":
-        this.state = "Managing subscriptions";
-        this.largeImageKey = "glitchy";
-        this.largeImageText = "Subscriptions";
-        break;
-      case "inventory":
-        this.state = "Managing inventory";
-        this.largeImageKey = "glitchy";
-        this.largeImageText = "Inventory";
-        break;
-      case "payments":
-        this.state = "Managing payment methods";
-        this.largeImageKey = "glitchy";
-        this.largeImageText = "Payments";
-        break;
-      case "jobs":
-        this.state = "Looking for a job";
-        this.largeImageKey = "glitchy";
-        this.largeImageText = "Jobs";
-        break;
-      case "p":
-        switch (res[2]) {
-          case "about":
-            this.state = "About page";
-            this.largeImageKey = "glitchy";
-            this.largeImageText = "About";
-            break;
-          case "cookie-policy":
-            this.state = "Reading cookie policy";
-            this.largeImageKey = "glitchy";
-            this.largeImageText = "Cookies";
-            break;
-          case "partners":
-            this.state = "Partnership page";
-            this.largeImageKey = "glitchy";
-            this.largeImageText = "Partners";
-            break;
-          case "press":
-            this.state = "Press page";
-            this.largeImageKey = "glitchy";
-            this.largeImageText = "Press";
-            break;
-          case "privacy-policy":
-            this.state = "Privacy policy";
-            this.largeImageKey = "glitchy";
-            this.largeImageText = "Privacy policy";
-            break;
-          case "terms-of-service":
-            this.state = "Reading TOS";
-            this.largeImageKey = "glitchy";
-            this.largeImageText = "Terms of Service";
-            break;
-          default:
-            this.state = res[2];
-            this.largeImageKey = "glitchy";
-            this.largeImageText = res[2];
-          }
-        break;
-      default:
-          if (res[2]=="dashboard") {
-            this.state = "Channnel Dasboard";
-            this.largeImageKey = "glitchy";
-            this.largeImageText = res[1];
-          } else if (res[2]=="manager") {
-            this.state = "Video Manager";
-            this.largeImageKey = "glitchy";
-            this.largeImageText = res[1];
-        } else {
-          if (featured.indexOf(res[1])!=-1) {
-            this.largeImageKey = res[1];  
-          } else {
-            this.largeImageKey = "glitchy";
-          }
-          this.state = "Watching " + res[1];
-          this.largeImageText = res[1];
-        }
-        break;
-    }
-  } else {
-    this.details = "Twitch";
-    this.state = "Unknown Location";
-    this.largeImageKey = "glitchy";
-    this.largeImageText = "Unknown Location";
-    this.smallImageKey = "twitch";
-    this.smallImageText = "Unknown Location";
-  }
-  return this;
-}
 
 var share=true;
 
 async function setActivity() {
   if (!rpc || !mainWindow)
-    return;
+  return;
   
   await mainWindow.webContents.executeJavaScript("new Promise((r,x)=>{\
     r(document.querySelector('[data-a-target=share-activity-toggle]').getAttribute('data-a-value')=='true');})").then((r)=>{
-    share=r;
-  }); 
-
-  if (!share) {
-    rpc.setActivity({
-      largeImageKey: "glitchy",
-      largeImageText: "Twitch",
-      instance: false,
-    });
-  } else {
-    const boops = await mainWindow.webContents.executeJavaScript('window.boops');
-    logger.debug("Location: " + mainWindow.webContents.history[mainWindow.webContents.currentIndex])
-    var status = dispatchUrl(mainWindow.webContents.history[mainWindow.webContents.currentIndex])
-    logger.debug(status.details + "/" + status.state + "/" + status.largeImageKey + "/" + status.largeImageText + "/" + status.smallImageKey + "/" + status.smallImageText);
-    logger.debug("Setting RPC activity.");
-    rpc.setActivity({
-      details:  status.details,
-      state: status.state,
-      startTimestamp,
-      largeImageKey: status.largeImageKey,
-      largeImageText: status.largeImageText,
-      smallImageKey: status.smallImageKey,
-      smallImageText: status.smallImageText,
-      instance: false,
-    });
+      share=r;
+    }); 
+    
+    if (!share) {
+      rpc.setActivity({
+        largeImageKey: "glitchy",
+        largeImageText: "Twitch",
+        instance: false,
+      });
+    } else {
+      const boops = await mainWindow.webContents.executeJavaScript('window.boops');
+      logger.debug("Location: " + mainWindow.webContents.history[mainWindow.webContents.currentIndex])
+      var status = dispatchUrl(mainWindow.webContents.history[mainWindow.webContents.currentIndex])
+      logger.debug(status.details + "/" + status.state + "/" + status.largeImageKey + "/" + status.largeImageText + "/" + status.smallImageKey + "/" + status.smallImageText);
+      logger.debug("Setting RPC activity.");
+      rpc.setActivity({
+        details:  status.details,
+        state: status.state,
+        startTimestamp,
+        largeImageKey: status.largeImageKey,
+        largeImageText: status.largeImageText,
+        smallImageKey: status.smallImageKey,
+        smallImageText: status.smallImageText,
+        instance: false,
+      });
+    }
   }
-}
-
-
-rpc.on('ready', () => {
-  setActivity();
-
-  // activity can only be set every 15 seconds
-  setInterval(() => {
+  
+  const ws = {
+    width: 800,
+    height: 600,
+    resizable: true,
+    titleBarStyle: 'hidden',
+    webPreferences: { nativeWindowOpen: true, webSecurity: false },
+    icon: path.join(__dirname, 'assets/icons/64x64.png'),
+    
+  };
+  
+  function showsettings() {
+    nwin = new BrowserWindow(ws);
+    //nwin.setMenu(null);
+    
+    nwin.loadURL(url.format({
+      pathname: path.join(__dirname, 'settings.html'),
+      protocol: 'file:',
+      slashes: true
+    }));
+    nwin.show();
+  }
+  
+  rpc.on('ready', () => {
     setActivity();
-  }, 15e3);
-});
-
-logger.info("Attempt to connect to Discord RPC");
-rpc.login(ClientId).catch(logger.error);
+    
+    // activity can only be set every 15 seconds
+    setInterval(() => {
+      setActivity();
+    }, 15e3);
+  });
+  
+  logger.info("Attempt to connect to Discord RPC");
+  rpc.login(ClientId).catch(logger.error);
+  
+  ipcMain.on('asynchronous-message', (event, arg) => {
+    logger.debug("Received asynchronous RPC call " + arg);
+    switch (arg) {
+      case "openSettings":
+        showsettings();
+        break;
+      default:
+        logger.error("ERROR: no handler for RPC call " + arg);
+        break;
+    }
+  });
+  

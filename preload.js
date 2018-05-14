@@ -1,5 +1,6 @@
 var logger = require('electron-log');
-var mainWindow = require('./main');
+const path = require('path');
+const {ipcRenderer} = require('electron');
 
 window.console.log = logger.log;
 window.console.warn = logger.warn;
@@ -8,5 +9,5 @@ window.console.error = logger.error;
 window.console.debug = logger.debug;
 
 window.td_settings = function() {
-    alert("Placeholder");
+    ipcRenderer.send('asynchronous-message', 'openSettings'); // sends rpc message to open settings
 }

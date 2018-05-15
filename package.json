@@ -1,6 +1,6 @@
 {
   "name": "td",
-  "version": "0.1.0+bd67f92",
+  "version": "0.1.0+8208528",
   "description": "A minimal Electron application",
   "main": "main.js",
   "scripts": {

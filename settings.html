@@ -1,11 +1,151 @@
 <!doctype html>
 <html>
-    <head>
-        <title>Placeholder!</title>
-        <meta http-equiv="encoding" charset="utf-8" />
-    </head>
-    <body>
-        <h1>Placeholder for settings window</h1>
-        <img src="assets/icons/128x128.png" />
-    </body>
+
+<head>
+  <title>Td settings</title>
+  <meta http-equiv="encoding" charset="utf-8" />
+  <script>
+    window.jQuery = window.$ = require('jquery');
+  </script>
+  <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css">
+</head>
+
+<body>
+  <div class="content">
+    <nav class="navbar navbar-light bg-light">
+        <img src="assets/icons/48x48.png" alt="Td" class="float-left"/><span class="navbar-brand mb-0 h1">&nbsp;Settings</span>
+    </nav>
+    <div class="row">
+      <div class="col-3">
+        <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+          <a class="nav-link active" id="general-tab" data-toggle="pill" href="#general" role="tab" aria-controls="general" aria-selected="true">General</a>
+          <a class="nav-link" id="scripts-tab" data-toggle="pill" href="#scripts" role="tab" aria-controls="scripts" aria-selected="false">Extensions</a>
+          <a class="nav-link" id="version-tab" data-toggle="pill" href="#version" role="tab" aria-controls="version" aria-selected="false">Version</a>
+          <a class="nav-link" id="license-tab" data-toggle="pill" href="#license" role="tab" aria-controls="license" aria-selected="false">License</a>
+        </div>
+      </div>
+      <div class="col-9">
+        <div class="tab-content" id="v-pills-tabContent">
+          <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+            <div class="row">
+              <div class="col">
+                <h1>General</h1>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg" style="line-height: 1em">
+                <p>
+                  <b>Developer Mode</b>
+                </p>
+                <p>
+                  <i>Enables developer menu and extra ninja features.</i>
+                </p>
+              </div>
+              <div class="col-sm-auto pr-5 pt-2">
+                <div class="btn-group" role="group" aria-label="Developer Mode">
+                  <button type="button" class="btn btn-secondary active">Yes</button>
+                  <button type="button" class="btn btn-secondary">No</button>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg" style="line-height: 1em">
+                <p>
+                  <b>"Share my activity" mode</b>
+                </p>
+                <p>
+                  <i>Disabling Twitch's native "share my activity" checkbox will also stop Td from sharing what you're doing.</i>
+                </p>
+              </div>
+              <div class="col-sm-auto pr-5 pt-2">
+                <div class="btn-group" role="group" aria-label="Share Link">
+                  <button type="button" class="btn btn-secondary active">Yes</button>
+                  <button type="button" class="btn btn-secondary">No</button>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg" style="line-height: 1em">
+                <p>
+                  <b>Safe mode</b>
+                </p>
+                <p>
+                  <i>Disables all non-core features of Td, useful for testing broken stuff.</i>
+                </p>
+              </div>
+              <div class="col-sm-auto pr-5 pt-2">
+                <div class="btn-group" role="group" aria-label="Share Link">
+                  <button type="button" class="btn btn-secondary">Yes</button>
+                  <button type="button" class="btn btn-secondary active">No</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="scripts" role="tabpanel" aria-labelledby="scripts-tab">
+            <div class="row">
+              <div class="col">
+                <h1>Extensions</h1>
+              </div>
+            </div>
+          </div>
+          <div class="tab-pane fade" style="line-height:1em" id="version" role="tabpanel" aria-labelledby="version-tab">
+            <div class="row">
+              <div class="col-sm-auto">
+                <img src="assets/icons/256x256.png" class="float-left" alt="Td" />
+              </div>
+              <div class="col pt-3">
+                  <h2>Td (for Twitch)</h2>
+                  <p>Version <span id="td_ver">ERROR</span></p>
+                  <p>Copyright (c) 2018, Marc Sances</p>
+                  <p>Node <span id="node_ver"></span></p>
+                  <p>Client <span id="electron_ver"></span></p>
+                  <p>Renderer <span id="chrome_ver"></span></p>
+                  <p>Engine <span id="v8_ver"></span></p>
+              </div>
+            </div>
+            
+            <script type="text/javascript">
+              $("#td_ver").html(ipc_sendQuery("app_ver"));
+              $("#node_ver").html(ipc_sendQuery("node_ver"));
+              $("#electron_ver").html(ipc_sendQuery("electron_ver"));
+              $("#chrome_ver").html(ipc_sendQuery("chrome_ver"));
+              $("#v8_ver").html(ipc_sendQuery("v8_ver"));
+            </script>
+          </div>
+          <div class="tab-pane fade" id="license" role="tabpanel" aria-labelledby="license-tab">
+            <div class="row">
+              <div class="col">
+                <h1>License</h1>
+              </div>
+            </div>
+            <p>Copyright 2018, Marc Sances</p>
+
+            <p>Redistribution and use in source and binary forms, with or without modification, are permitted provided that
+              the following conditions are met:</p>
+
+            <p>1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following
+              disclaimer.</p>
+
+            <p>2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the
+              following disclaimer in the documentation and/or other materials provided with the distribution.</p>
+
+            <p>3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote
+              products derived from this software without specific prior written permission.</p>
+
+            <p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+              INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+              ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+              INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+              GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+              OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+              ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="./node_modules/popper.js/dist/umd/popper.js"></script>
+  <script src="./node_modules/bootstrap/dist/js/bootstrap.js"></script>
+</body>
+
 </html>

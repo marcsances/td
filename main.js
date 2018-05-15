@@ -176,7 +176,7 @@ async function setActivity() {
     height: 600,
     resizable: true,
     titleBarStyle: 'hidden',
-    webPreferences: { nativeWindowOpen: true, webSecurity: false },
+    webPreferences: { nativeWindowOpen: true,  preload: path.join(__dirname,'ipc.js'), webSecurity: false },
     icon: path.join(__dirname, 'assets/icons/64x64.png'),
     
   };
@@ -205,12 +205,38 @@ async function setActivity() {
   logger.info("Attempt to connect to Discord RPC");
   rpc.login(ClientId).catch(logger.error);
   
-  ipcMain.on('asynchronous-message', (event, arg) => {
+  ipcMain.on('sync', (event,arg) => {
+    logger.debug("Received synchronous RPC call " + arg);
+    switch (arg) {
+      case "app_ver":
+        event.returnValue = app_ver;
+        break;
+      case "node_ver":
+        event.returnValue = process.versions.node;
+        break;
+      case "electron_ver":
+        event.returnValue = process.versions.electron;
+        break;
+      case "chrome_ver":
+        event.returnValue = process.versions.chrome;
+        break;
+      case "v8_ver":
+        event.returnValue = process.versions.v8;
+        break;
+      default:
+        logger.error("ERROR: no handler for RPC call " + arg);
+        event.returnValue = null;
+        break;
+    }
+  });
+
+  ipcMain.on('async', (event, arg) => {
     logger.debug("Received asynchronous RPC call " + arg);
     switch (arg) {
       case "openSettings":
         showsettings();
         break;
+        
       default:
         logger.error("ERROR: no handler for RPC call " + arg);
         break;

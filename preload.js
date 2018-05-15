@@ -9,5 +9,5 @@ window.console.error = logger.error;
 window.console.debug = logger.debug;
 
 window.td_settings = function() {
-    ipcRenderer.send('asynchronous-message', 'openSettings'); // sends rpc message to open settings
+    ipcRenderer.send('async', 'openSettings'); // sends rpc message to open settings
 }

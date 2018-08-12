@@ -24,6 +24,7 @@ const ClientId = '442789695038947328';
 const window = require('electron').BrowserWindow;
 const dispatchUrl = require('./dispatcher').dispatchUrl;
 const {ipcMain} = require('electron');
+const {get_settings_string,set_settings_string,delete_settings} = require("./settings");
 
 const userscripts = ['https://cdn.betterttv.net/betterttv.js', 'https://cdn.frankerfacez.com/script/script.min.js'];
 // TODO: dynamic loading on user request
@@ -90,6 +91,7 @@ function createWindow() {
         {role: 'toggledevtools'},
         {label: 'Copy current URL', click() {wc=window.getFocusedWindow().webContents;copy(wc.history[wc.currentIndex])}},
         {label: 'Version', click() { dialog.showMessageBox({message: "Td version " + app_ver + "\nNode v" + process.versions.node + "\nClient v" + process.versions.electron + "\nRenderer v" + process.versions.chrome + "\nEngine v" + process.versions.v8, buttons: ["OK"] })}},
+        {label: 'Settings...', click() { window.getFocusedWindow().webContents.executeJavaScript("td_settings()")}}
       ]
     },
   ];
@@ -179,6 +181,8 @@ async function setActivity() {
     
   };
   
+
+
   function showsettings() {
     nwin = new BrowserWindow(ws);
     //nwin.setMenu(null);
@@ -205,6 +209,10 @@ async function setActivity() {
   
   ipcMain.on('sync', (event,arg) => {
     logger.debug("Received synchronous RPC call " + arg);
+    if (arg.length >=10 && arg.substring(0,9) == "gsettings") {
+      event.returnValue = get_settings_string(arg.substring(10));
+      return;
+    };
     switch (arg) {
       case "app_ver":
         event.returnValue = app_ver;
@@ -220,7 +228,7 @@ async function setActivity() {
         break;
       case "v8_ver":
         event.returnValue = process.versions.v8;
-        break;
+        break;  
       default:
         logger.error("ERROR: no handler for RPC call " + arg);
         event.returnValue = null;
@@ -230,11 +238,19 @@ async function setActivity() {
 
   ipcMain.on('async', (event, arg) => {
     logger.debug("Received asynchronous RPC call " + arg);
+
+    if (arg.length >= 10 && arg.substring(0,9) == "wsettings") {
+      set_settings_string(arg.substring(10, arg.indexOf(',')),arg.substring(arg.indexOf(',')+1));
+      return;
+    }
     switch (arg) {
       case "openSettings":
         showsettings();
         break;
         
+      case "deleteSettings":
+        delete_settings();
+        break;
       default:
         logger.error("ERROR: no handler for RPC call " + arg);
         break;

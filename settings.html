@@ -43,8 +43,8 @@
               </div>
               <div class="col-sm-auto pr-5 pt-2">
                 <div class="btn-group" role="group" aria-label="Developer Mode">
-                  <button type="button" class="btn btn-secondary active">Yes</button>
-                  <button type="button" class="btn btn-secondary">No</button>
+                  <button type="button" class="btn btn-secondary active" id="devmode1" onclick="enable_setting('devmode')">Yes</button>
+                  <button type="button" class="btn btn-secondary" id="devmode0" onclick="disable_setting('devmode')">No</button>
                 </div>
               </div>
             </div>
@@ -59,8 +59,8 @@
               </div>
               <div class="col-sm-auto pr-5 pt-2">
                 <div class="btn-group" role="group" aria-label="Share Link">
-                  <button type="button" class="btn btn-secondary active">Yes</button>
-                  <button type="button" class="btn btn-secondary">No</button>
+                  <button type="button" class="btn btn-secondary active" id="sharelink1" onclick="enable_setting('sharelink')">Yes</button>
+                  <button type="button" class="btn btn-secondary" id="sharelink0" onclick="disable_setting('sharelink')">No</button>
                 </div>
               </div>
             </div>
@@ -74,10 +74,23 @@
                 </p>
               </div>
               <div class="col-sm-auto pr-5 pt-2">
-                <div class="btn-group" role="group" aria-label="Share Link">
-                  <button type="button" class="btn btn-secondary">Yes</button>
-                  <button type="button" class="btn btn-secondary active">No</button>
+                <div class="btn-group" role="group" aria-label="Safe Mode">
+                  <button type="button" class="btn btn-secondary" id="safemode1" onclick="enable_setting('safemode')">Yes</button>
+                  <button type="button" class="btn btn-secondary active" id="safemode0" onclick="disable_setting('safemode')">No</button>
                 </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg" style="line-height: 1em">
+                <p>
+                  <b>Reset Td</b>
+                </p>
+                <p>
+                  <i>Deletes all your personal configuration and resets it to factory defaults.</i>
+                </p>
+              </div>
+              <div class="col-sm-auto pr-5 pt-2">
+                  <button type="button" class="btn btn-danger" id="deleteall" onclick="if(confirm('This will delete ALL your settings. Proceed?')) { ipc_sendMessage('deleteSettings'); alert('Settings deleted. Restart Td to see the changes.') }">Reset Td</button>
               </div>
             </div>
           </div>
@@ -146,6 +159,42 @@
   </div>
   <script src="./node_modules/popper.js/dist/umd/popper.js"></script>
   <script src="./node_modules/bootstrap/dist/js/bootstrap.js"></script>
+  <script type="text/javascript">
+  function enable_setting(key) {
+    ipc_sendMessage("wsettings " + key + ",1");
+    enable_option(key);
+  }
+
+  function disable_setting(key) {
+    ipc_sendMessage("wsettings " + key + ",0");
+    disable_option(key);
+  }
+
+  function enable_option(name) {
+    $("#" + name + "0").removeClass("active");
+    $("#" + name + "1").addClass("active");
+  }
+
+  function disable_option(name) {
+    $("#" + name + "0").addClass("active");
+    $("#" + name + "1").removeClass("active");
+  }
+
+  function retrieve_option(name) {
+    value = ipc_sendQuery("gsettings " + name);
+    if (value == "1") {
+      enable_option(name);
+    } else {
+      disable_option(name);
+    }
+  }
+
+  function load_settings() {
+    ["devmode", "sharelink", "safemode"].map(retrieve_option);
+  }
+
+  load_settings();
+  </script>
 </body>
 
 </html>

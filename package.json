@@ -1,5 +1,5 @@
 {
-  "name": "td",     
+  "name": "td",
   "version": "0.1.0+782f2fb",
   "description": "Unofficial Twitch client with Discord Rich Presence support and extra features",
   "main": "main.js",

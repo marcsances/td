@@ -31,7 +31,6 @@ const userscripts = ['https://cdn.betterttv.net/betterttv.js', 'https://cdn.fran
 var logger = require('electron-log');
 var devMenu = true; 
 
-
 const winSettings = {
   width: 800,
   height: 600,
@@ -71,6 +70,20 @@ function newWindow(event,url) {
   return;
 }
 
+const defaultSettings = {
+  devmode: "1",
+  sharelink: "1",
+  safemode: "0"
+};
+
+function init_settings() {
+  Object.keys(defaultSettings).map((key) => {
+    if (get_settings_string(key)=="undefined" || get_settings_string(key)==undefined) {
+      set_settings_string(key, defaultSettings[key]);
+    }
+  });
+}
+
 function createWindow() {
   logger.transports.console.level = 'debug';
   logger.transports.file.level = 'debug';
@@ -81,7 +94,7 @@ function createWindow() {
   console.log = logger.debug;
   mainWindow = new BrowserWindow(winSettings);
   const {app, Menu} = require('electron')
-  
+  init_settings();
   const template = [
     {
       label: 'Developer Menu',
@@ -97,8 +110,8 @@ function createWindow() {
   ];
   
   const menu = Menu.buildFromTemplate(template)
-  mainWindow.setMenu(devMenu ? menu : null);
-  Menu.setApplicationMenu(menu);
+  mainWindow.setMenu(get_settings_string("devmode")=="1" ? menu : null);
+  Menu.setApplicationMenu(get_settings_string("devmode")=="1" ? menu : null);
   var user = process.argv.length>=3 ? process.argv[2] : "";
   mainWindow.loadURL("https://www.twitch.tv/" + user);
   
@@ -136,6 +149,7 @@ const startTimestamp = new Date();
 
 
 var share=true;
+
 
 async function setActivity() {
   if (!rpc || !mainWindow)

@@ -1,5 +1,5 @@
 {
-  "name": "td",
+  "name": "td",     
   "version": "0.1.0+782f2fb",
   "description": "Unofficial Twitch client with Discord Rich Presence support and extra features",
   "main": "main.js",
@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "bcrypt": "^2.0.1",
-    "bootstrap": "^4.1.3",
+    "bootstrap": "^4.1.1",
     "bufferutil": "^3.0.5",
     "copy-paste": "^1.3.0",
     "discord-rpc": "^3.0.0-beta.12",
@@ -39,12 +39,12 @@
     "electron-settings": "^3.2.0",
     "erlpack": "^0.1.2",
     "jquery": "^3.3.1",
-    "node-gyp": "^3.8.0",
+    "node-gyp": "^3.7.0",
     "node-opus": "^0.3.0",
     "opusscript": "0.0.6",
-    "popper.js": "^1.14.4",
+    "popper.js": "^1.14.3",
     "rebuild": "^0.1.2",
     "register-scheme": "0.0.2",
-    "uws": "^10.148.2"
+    "uws": "^10.148.1"
   }
 }

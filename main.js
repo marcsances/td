@@ -68,6 +68,16 @@ function injectScripts(window) {
 
 function newWindow(event,url) {
   logger.debug("new-window, url:" + url);
+  if (url=="about:blank") return;
+  event.preventDefault();
+  const win = new BrowserWindow(winSettings)	
+  win.loadURL(url);	
+  win.on('ready-to-show', () => injectScripts(win));	
+  win.webContents.on('new-window', newWindow);	
+  win.on('closed', () => {	
+    logger.debug('closing child');	
+  });	
+  event.newGuest = win;
   return;
 }
 

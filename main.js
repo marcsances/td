@@ -26,7 +26,7 @@ const dispatchUrl = require('./dispatcher').dispatchUrl;
 const {ipcMain} = require('electron');
 const {get_settings_string,set_settings_string,delete_settings} = require("./settings");
 
-const userscripts = ['https://cdn.betterttv.net/betterttv.js', 'https://cdn.frankerfacez.com/script/script.min.js'];
+var userscripts = "";
 // TODO: dynamic loading on user request
 var logger = require('electron-log');
 var devMenuOverride = false; 
@@ -45,10 +45,11 @@ let mainWindow = null;
 
 function getUserscriptInjectors() {
   var injectors = "";
-  for (var i = 0; i < userscripts.length; i++) {
+  usc = userscripts.split(',');
+  for (var i = 0; i < usc.length; i++) {
     injectors = injectors + "var script = document.createElement('script');\
     script.type = 'text/javascript';\
-    script.src = '" + userscripts[i] + "';\
+    script.src = '" + usc[i] + "';\
     var head = document.getElementsByTagName('head')[0];\
     if (!head) return;\
     head.appendChild(script);";
@@ -73,7 +74,8 @@ function newWindow(event,url) {
 const defaultSettings = {
   devmode: "1",
   sharelink: "1",
-  safemode: "0"
+  safemode: "0",
+  extensionslist: "https://cdn.betterttv.net/betterttv.js,https://cdn.frankerfacez.com/script/script.min.js"
 };
 
 function init_settings() {
@@ -82,6 +84,7 @@ function init_settings() {
       set_settings_string(key, defaultSettings[key]);
     }
   });
+  userscripts = get_settings_string("extensionslist");
 }
 
 function createWindow() {

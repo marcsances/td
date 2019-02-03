@@ -17,7 +17,7 @@ const settings = require('electron-settings');
 
 function get_settings_string(key) {
     value = settings.get(key);
-    return value!=undefined ? value : "0";
+    return value;
 }
 
 function set_settings_string(key, value) {

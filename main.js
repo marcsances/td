@@ -29,7 +29,7 @@ const {get_settings_string,set_settings_string,delete_settings} = require("./set
 const userscripts = ['https://cdn.betterttv.net/betterttv.js', 'https://cdn.frankerfacez.com/script/script.min.js'];
 // TODO: dynamic loading on user request
 var logger = require('electron-log');
-var devMenu = true; 
+var devMenuOverride = false; 
 
 const winSettings = {
   width: 800,
@@ -53,7 +53,7 @@ function getUserscriptInjectors() {
     if (!head) return;\
     head.appendChild(script);";
   }
-  injectors = injectors + ";document.querySelector(\"[data-a-target='settings-dropdown-link']\").outerHTML = document.querySelector(\"[data-a-target='settings-dropdown-link']\").outerHTML + \"<a class='tw-interactable' data-a-target='td-dropdown-link' href='javascript:td_settings()'><div class='tw-align-items-center tw-c-text-alt tw-flex tw-pd-x-2 tw-pd-y-05'><div class='tw-align-items-center tw-flex tw-mg-r-1'><svg class='tw-svg__asset tw-svg__asset--inherit tw-svg__asset--navsettings' width='18px' height='18px' version='1.1' viewBox='0 0 18 18' x='0px' y='0px'><path clip-rule='evenodd' d='M15.03,5.091v4.878l-2,2H8.151l-3.061,3.061L2.97,12.908l3.061-3.06V4.97l2-2h4.879L8.97,6.909l2.121,2.121L15.03,5.091z' fill-rule='evenodd'></path></svg></div><p class=''>Td settings</p></div></a>\";";
+  injectors = injectors + ";setTimeout(function a(){ document.querySelector(\"[data-a-target='settings-dropdown-link']\").outerHTML = document.querySelector(\"[data-a-target='settings-dropdown-link']\").outerHTML + \"<a class='tw-interactable' data-a-target='td-dropdown-link' href='javascript:td_settings()'><div class='tw-align-items-center tw-c-text-alt tw-flex tw-pd-x-2 tw-pd-y-05'><div class='tw-align-items-center tw-flex tw-mg-r-1'><svg class='tw-svg__asset tw-svg__asset--inherit tw-svg__asset--navsettings' width='18px' height='18px' version='1.1' viewBox='0 0 18 18' x='0px' y='0px'><path clip-rule='evenodd' d='M15.03,5.091v4.878l-2,2H8.151l-3.061,3.061L2.97,12.908l3.061-3.06V4.97l2-2h4.879L8.97,6.909l2.121,2.121L15.03,5.091z' fill-rule='evenodd'></path></svg></div><p class=''>Td settings</p></div></a>\"; },1000);";
   
   return injectors;
 }
@@ -110,8 +110,8 @@ function createWindow() {
   ];
   
   const menu = Menu.buildFromTemplate(template)
-  mainWindow.setMenu(get_settings_string("devmode")=="1" ? menu : null);
-  Menu.setApplicationMenu(get_settings_string("devmode")=="1" ? menu : null);
+  mainWindow.setMenu(get_settings_string("devmode")=="1" || devMenuOverride ? menu : null);
+  Menu.setApplicationMenu(get_settings_string("devmode")=="1" || devMenuOverride ? menu : null);
   var user = process.argv.length>=3 ? process.argv[2] : "";
   mainWindow.loadURL("https://www.twitch.tv/" + user);
   
@@ -202,7 +202,7 @@ async function setActivity() {
     //nwin.setMenu(null);
     
     nwin.loadURL(url.format({
-      pathname: path.join(__dirname, 'settings.html'),
+      pathname: path.join(__dirname, 'assets', 'html', 'settings.html'),
       protocol: 'file:',
       slashes: true
     }));

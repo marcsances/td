@@ -35,7 +35,7 @@ const winSettings = {
   width: 800,
   height: 600,
   resizable: true,
-  titleBarStyle: 'hidden',
+  titleBarStyle: 'visible',
   show: false,
   webPreferences: { nodeIntegration: false, preload: path.join(__dirname,'preload.js'), nativeWindowOpen: true },
   icon: path.join(__dirname, 'assets/icons/64x64.png')

@@ -26,11 +26,11 @@
   "author": "Marc Sances",
   "license": "BSD-3-Clause",
   "devDependencies": {
-    "electron": "^1.8.7"
+    "electron": "^5.0.6"
   },
   "dependencies": {
-    "bcrypt": "^2.0.1",
-    "bootstrap": "^4.1.1",
+    "bcrypt": "^3.0.6",
+    "bootstrap": "^4.3.1",
     "bufferutil": "^3.0.5",
     "copy-paste": "^1.3.0",
     "discord-rpc": "^3.0.0-beta.12",
@@ -38,8 +38,8 @@
     "electron-log": "^2.2.16",
     "electron-settings": "^3.2.0",
     "erlpack": "^0.1.2",
-    "jquery": "^3.3.1",
-    "node-gyp": "^3.7.0",
+    "jquery": "^3.4.1",
+    "node-gyp": "^5.0.2",
     "node-opus": "^0.3.0",
     "opusscript": "0.0.6",
     "popper.js": "^1.14.3",

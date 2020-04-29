@@ -39,7 +39,7 @@
     "electron-log": "^2.2.16",
     "electron-settings": "^3.2.0",
     "erlpack": "^0.1.2",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "node-gyp": "^5.0.2",
     "node-opus": "^0.3.0",
     "opusscript": "0.0.6",

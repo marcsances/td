@@ -26,27 +26,27 @@
   "author": "Marc Sances",
   "license": "BSD-3-Clause",
   "devDependencies": {
-    "electron": "^7.2.4",
+    "electron": "^7.3.2",
     "electron-builder": "^20.44.4"
   },
   "dependencies": {
-    "bcrypt": "^3.0.6",
-    "bootstrap": "^4.3.1",
+    "bcrypt": "^3.0.8",
+    "bootstrap": "^4.5.0",
     "bufferutil": "^3.0.5",
     "copy-paste": "^1.3.0",
-    "discord-rpc": "^3.0.0-beta.12",
-    "discord.js": "^11.3.2",
-    "electron-log": "^2.2.16",
+    "discord-rpc": "^3.1.1",
+    "discord.js": "^11.6.4",
+    "electron-log": "^2.2.17",
     "electron-settings": "^3.2.0",
-    "erlpack": "^0.1.2",
-    "jquery": "^3.5.0",
-    "node-gyp": "^5.0.2",
-    "node-opus": "^0.3.0",
+    "erlpack": "^0.1.3",
+    "extend": "3.0.2",
+    "jquery": "^3.5.1",
+    "node-gyp": "^5.1.1",
+    "node-opus": "^0.3.3",
     "opusscript": "0.0.6",
-    "popper.js": "^1.14.3",
+    "popper.js": "^1.16.1",
     "rebuild": "^0.1.2",
     "register-scheme": "0.0.2",
-    "uws": "^10.148.1",
-    "extend": "3.0.2"
+    "uws": "^10.148.2"
   }
 }

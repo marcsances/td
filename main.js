@@ -17,7 +17,6 @@ const app_ver = pjson.version;
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const url = require('url');
-const DiscordRPC = require('discord-rpc');
 const {dialog} = require('electron');
 const {copy, paste} = require('copy-paste')
 const ClientId = '442789695038947328';
@@ -25,7 +24,7 @@ const window = require('electron').BrowserWindow;
 const dispatchUrl = require('./dispatcher').dispatchUrl;
 const {ipcMain} = require('electron');
 const {get_settings_string,set_settings_string,delete_settings} = require("./settings");
-
+const Discord = require('discord-game');
 var userscripts = "";
 // TODO: dynamic loading on user request
 var logger = require('electron-log');
@@ -129,6 +128,7 @@ function createWindow() {
   mainWindow.loadURL("https://www.twitch.tv/" + user);
   
   mainWindow.on('ready-to-show', () => {
+    init()
     injectScripts(mainWindow)
   });
   
@@ -155,16 +155,27 @@ app.on('activate', () => {
   createWindow();
 });
 
-DiscordRPC.register(ClientId);
+function init() {
+  const isRequireDiscord = true;
+  console.log(`Trying to connect to Discord (Client ID: ${ClientId}}`);
+  const rpc = Discord.create(ClientId, isRequireDiscord);
+  console.log(rpc);
+  setActivity(rpc);
 
-const rpc = new DiscordRPC.Client({ transport: 'ipc' });
-const startTimestamp = new Date();
+// activity can only be set every 15 seconds
+  setInterval(() => {
+    setActivity(rpc);
+  }, 15e3);
+  const startTimestamp = new Date();
+}
+
+
 
 
 var share=true;
 
 
-async function setActivity() {
+async function setActivity(rpc) {
   if (!rpc || !mainWindow)
   return;
   
@@ -174,10 +185,13 @@ async function setActivity() {
     }); 
     
     if (!share) {
-      rpc.setActivity({
-        largeImageKey: "glitchy",
-        largeImageText: "Twitch",
-        instance: false,
+      Discord.Activity.update({
+        assets: {
+          largeImageKey: "glitchy",
+          largeImageText: "Twitch",
+        }
+      }).then(() => {
+        console.log("set RPC activity OK");
       });
     } else {
       const boops = await mainWindow.webContents.executeJavaScript('window.boops');
@@ -185,15 +199,20 @@ async function setActivity() {
       var status = dispatchUrl(mainWindow.webContents.history[mainWindow.webContents.currentIndex])
       logger.debug(status.details + "/" + status.state + "/" + status.largeImageKey + "/" + status.largeImageText + "/" + status.smallImageKey + "/" + status.smallImageText);
       logger.debug("Setting RPC activity.");
-      rpc.setActivity({
+      Discord.Activity.update({
         details:  status.details,
         state: status.state,
-        startTimestamp,
-        largeImageKey: status.largeImageKey,
-        largeImageText: status.largeImageText,
-        smallImageKey: status.smallImageKey,
-        smallImageText: status.smallImageText,
-        instance: false,
+        timestamps: {
+          startAt: startTimestamp
+        },
+        assets: {
+          largeImageKey: status.largeImageKey,
+          largeImageText: status.largeImageText,
+          smallImageKey: status.smallImageKey,
+          smallImageText: status.smallImageText,
+        }
+      }).then(() => {
+        console.log("set RPC activity OK");
       });
     }
   }
@@ -221,19 +240,8 @@ async function setActivity() {
     }));
     nwin.show();
   }
-  
-  rpc.on('ready', () => {
-    setActivity();
-    
-    // activity can only be set every 15 seconds
-    setInterval(() => {
-      setActivity();
-    }, 15e3);
-  });
-  
-  logger.info("Attempt to connect to Discord RPC");
-  rpc.login(ClientId).catch(logger.error);
-  
+
+
   ipcMain.on('sync', (event,arg) => {
     logger.debug("Received synchronous RPC call " + arg);
     if (arg.length >=10 && arg.substring(0,9) == "gsettings") {

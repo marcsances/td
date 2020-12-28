@@ -26,7 +26,7 @@
   "author": "Marc Sances",
   "license": "BSD-3-Clause",
   "devDependencies": {
-    "electron": "^7.3.2",
+    "electron": "^11.1.0",
     "electron-builder": "^20.44.4"
   },
   "dependencies": {

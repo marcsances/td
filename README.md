@@ -2,6 +2,24 @@
 
 Twitch client with Discord Rich Presence support.
 
+## Current Status (28-12-2020)
+
+Apparently Discord RPC has now been deprecated in favor of GameSDK. Moreover, RPC scopes are now whitelist only, so we cannot
+authenticate.
+
+Therefore, this seed is currently failing to show the current Rich Presence status due to the changes made to Discord APIs.
+
+I am working on integrating the new SDK (which seems not to be whitelist only), but I cannot provide a deadline yet.
+
+It is implemented already, but the SDK initialization returns me "false" so I will keep investigating whenever I have time for it.
+
+Feel free to use this project as a seed for integrating the current SDKs. Here's the reference material:
+
+* [Rich Presence](https://discord.com/developers/docs/rich-presence/best-practices)
+* [Discord GameSDK for Electron](https://github.com/open-unlight/node-discord-game)
+
+If you manage to fix this issue, feel free to open a pull request.
+
 ## What is this?
 
 td is a client that lets you use [Twitch](https://www.twitch.tv/) and show the channel you're watching through [Discord](https://discordapp.com/) Rich Presence feature. It's still in development stages but sounds cool, right?
@@ -13,6 +31,8 @@ Basic electron stuff, mostly nodejs and npm.
 ## Testing
 
 Clone repository and run ``npm install`` then ``npm start``. 
+
+Visual Studio Build Tools and Python 3 are required for building on Windows.
 
 Tested on Windows 10 and Ubuntu 16.04 LTS, both with no serious compatibility issues. *I need help for macOS testing!*
 

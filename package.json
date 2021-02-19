@@ -33,7 +33,7 @@
     "bootstrap": "^4.5.0",
     "copy-paste": "^1.3.0",
     "discord-game": "^0.1.2",
-    "electron-log": "^2.2.17",
+    "electron-log": "^4.3.2",
     "electron-settings": "^3.2.0",
     "erlpack": "^0.1.3",
     "extend": "3.0.2",

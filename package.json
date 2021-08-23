@@ -38,7 +38,7 @@
     "erlpack": "^0.1.3",
     "extend": "3.0.2",
     "jquery": "^3.5.1",
-    "node-gyp": "^5.1.1",
+    "node-gyp": "^8.2.0",
     "popper.js": "^1.16.1",
     "rebuild": "^0.1.2",
     "register-scheme": "0.0.2",

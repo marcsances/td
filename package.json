@@ -27,7 +27,7 @@
   "license": "BSD-3-Clause",
   "devDependencies": {
     "electron": "^11.1.1",
-    "electron-builder": "^20.44.4"
+    "electron-builder": "^23.3.3"
   },
   "dependencies": {
     "bootstrap": "^4.5.0",
